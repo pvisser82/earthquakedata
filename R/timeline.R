@@ -1,3 +1,12 @@
+#' Title
+#'
+#' @param base_size
+#' @param base_family
+#'
+#' @return
+#' @export
+#'
+#' @examples
 theme_timeline <- function(base_size = 11, base_family = ""){
   ggplot2::theme_classic(base_size = base_size, base_family = base_family) %+replace%
     ggplot2::theme(
