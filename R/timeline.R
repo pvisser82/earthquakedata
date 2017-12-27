@@ -1,36 +1,19 @@
-#' Title
+#' GeomTimeLine proto
 #'
-#' @param base_size
-#' @param base_family
+#' This geom is responsible for drawing a line per country and plotting the earthquakes on it.
+#' The magnitude of the earthquake is used for the size of the circles, while the deaths are used for colour.
 #'
-#' @return
-#' @export
 #'
-#' @examples
-theme_timeline <- function(base_size = 11, base_family = ""){
-  ggplot2::theme_classic(base_size = base_size, base_family = base_family) %+replace%
-    ggplot2::theme(
-      # hide the y axis line, ticks and title
-      axis.line.y = ggplot2::element_blank(),
-      axis.ticks.y = ggplot2::element_blank(),
-      axis.title.y = ggplot2::element_blank(),
-      # change the y axis line text to be darkgray, size 11 with a right-hand margin of 15
-      axis.text.y = ggplot2::element_text(colour = "darkgray",size = 11, margin = margin(r = 15)),
-      # show x axis and make the line colour black with a thickness of 1
-      axis.line.x = ggplot2::element_line(colour = "black", size = ggplot2::rel(1)),
-      # change the x axis text to be darkgray, size 11 with a top margin of 3
-      axis.text.x = ggplot2::element_text(colour = "darkgray",size = 11, margin = margin(t = 3)),
-      # change the x axis title to be size 14with a top margin of 5
-      axis.title.x = ggplot2::element_text(size = 14, margin = margin(t = 5)),
-      # as an extra, give the plot a title
-      plot.title = ggplot2::element_text(color = "darkgray", size = 24),
-      # position the legend at the bottom of the screen
-      legend.position = "bottom",
-
-      complete = TRUE
-    )
-}
-
+#' @importFrom ggplot2 ggproto
+#' @importFrom ggplot2 Geom
+#' @importFrom ggplot2 aes
+#' @importFrom ggplot2 draw_key_point
+#' @importFrom grid pointsGrob
+#' @importFrom grid unit
+#' @importFrom grid gpar
+#' @importFrom grid segmentsGrob
+#' @importFrom grid gTree
+#' @importFrom grid gList
 GeomTimeline <- ggplot2::ggproto("GeomTimeline", ggplot2::Geom,
                                  required_aes = c("x", "y"),
                                  non_missing_aes = c("size", "shape", "colour"),
@@ -74,6 +57,23 @@ GeomTimeline <- ggplot2::ggproto("GeomTimeline", ggplot2::Geom,
                                      country_line, eq_point))
                                  })
 
+#' geom_timeline function
+#'
+#' @param mapping The aesthetics that the geom accepts
+#' @param stat The statistical transformation function that must be used
+#'
+#' @return  This function returns a plot where earthquakes are plotted per country and where the size
+#' is the magnitude and the colour is the number of deaths
+#' @export
+#'
+#' @examples
+#' \dontrun {
+#' readr::read_delim("earthquakes.tsv.gz",delim = "\t") %>%
+#' eq_clean_data() %>%
+#'  dplyr::filter(COUNTRY == "USA" & lubridate::year(DATE) >= 2000) %>%
+#'  ggplot() +
+#'  geom_timeline(aes(x = DATE, y = COUNTRY,size = EQ_PRIMARY, colour = DEATHS))
+#' }
 geom_timeline <- function(mapping = NULL, data = NULL, stat = "identity",
                           position = "identity", na.rm = FALSE,
                           show.legend = NA, inherit.aes = TRUE, ...) {
@@ -85,6 +85,23 @@ geom_timeline <- function(mapping = NULL, data = NULL, stat = "identity",
   )
 }
 
+#' GeomTimeLineLabel proto
+#'
+#' This geom is responsible for drawing the labels on the timeline. The number of labels are set
+#' using the n_max parameter. The function will retrieve the n_max number of highest magnitudes
+#' using the setup_data function and add the label to those earthquakes.
+#'
+#' @param n_max The maximum number of labels to be displayed.
+#'
+#' @importFrom ggplot2 ggproto
+#' @importFrom ggplot2 Geom
+#' @importFrom ggplot2 aes
+#' @importFrom ggplot2 draw_key_label
+#' @importFrom dplyr top_n
+#' @importFrom grid segmentsGrob
+#' @importFrom grid gpar
+#' @importFrom grid textGrob
+#' @importFrom grid gTree
 GeomTimeLineLabel <- ggplot2::ggproto("GeomTimeLineLabel", ggplot2::Geom,
                                       required_aes = c("x", "y", "label"),
                                       default_aes = ggplot2::aes(
@@ -151,6 +168,27 @@ GeomTimeLineLabel <- ggplot2::ggproto("GeomTimeLineLabel", ggplot2::Geom,
 
                                       })
 
+#' geom_timeline_label function
+#'
+#' @param mapping The aesthetics that the geom accepts
+#' @param stat The statistical transformation function that must be used
+#' @param n_max The maximum number of labels to display
+#'
+#' @return This function returns the labels that are plotted on the timeline
+#' @export
+#'
+#' @examples
+#' \dontrun {
+#' readr::read_delim("earthquakes.tsv.gz",delim = "\t") %>%
+#' eq_clean_data() %>%
+#'  dplyr::filter(COUNTRY == "USA" & lubridate::year(DATE) >= 2000) %>%
+#'  ggplot() +
+#'  geom_timeline(aes(x = DATE, y = COUNTRY,size = EQ_PRIMARY, colour = DEATHS)) +
+#'  geom_timeline_label(aes(x = DATE, y = COUNTRY, label = LOCATION_NAME, size = EQ_PRIMARY), n_max = 5) +
+#'  ggtitle("Earthquake Timeline") +
+#'  theme_timeline +
+#'  labs(size = "Richter Scale value:", colour = "# of Deaths:")
+#' }
 geom_timeline_label <- function(mapping = NULL,
                                 data = NULL,
                                 stat = "identity",
@@ -178,5 +216,52 @@ geom_timeline_label <- function(mapping = NULL,
     )
   )
 }
+
+
+#' Timeline ad hoc Theme
+#'
+#' This theme modifies the Classis Theme to display the \code{geom_timeline} geometry.
+#' The y axis line, ticks and title are hidden
+#' The y axis line text is changed to darkgray with size 11 and a right-hand margin of 15
+#' The x axis line colour black with a thickness of 1
+#' The x axis text is changed to darkgray with size 11 with a top margin of 3
+#' The x axis title is size 14 with a top margin of 5
+#' The plot a title is added and justified horisontally in the middle of the plot
+#' The legend is positioned at the bottom of the screen
+#'
+#' @examples
+#' \dontrun {
+#' readr::read_delim("earthquakes.tsv.gz",delim = "\t") %>%
+#' eq_clean_data() %>%
+#'  dplyr::filter(COUNTRY == "USA" & lubridate::year(DATE) >= 2000) %>%
+#'  ggplot() +
+#'  geom_timeline(aes(x = DATE, y = COUNTRY,size = EQ_PRIMARY, colour = DEATHS)) +
+#'  geom_timeline_label(aes(x = DATE, y = COUNTRY, label = LOCATION_NAME, size = EQ_PRIMARY), n_max = 5) +
+#'  ggtitle("Earthquake Timeline") +
+#'  theme_timeline +
+#'  labs(size = "Richter Scale value:", colour = "# of Deaths:")
+#' }
+theme_timeline <- ggplot2::theme_classic() +
+  ggplot2::theme(
+    # hide the y axis line, ticks and title
+    axis.line.y = ggplot2::element_blank(),
+    axis.ticks.y = ggplot2::element_blank(),
+    axis.title.y = ggplot2::element_blank(),
+    # change the y axis line text to be darkgray, size 11 with a right-hand margin of 15
+    axis.text.y = ggplot2::element_text(colour = "darkgray",size = 11, margin = ggplot2::margin(r = 15)),
+    # show x axis and make the line colour black with a thickness of 1
+    axis.line.x = ggplot2::element_line(colour = "black", size = ggplot2::rel(1)),
+    # change the x axis text to be darkgray, size 11 with a top margin of 3
+    axis.text.x = ggplot2::element_text(colour = "darkgray",size = 11, margin = ggplot2::margin(t = 3)),
+    # change the x axis title to be size 14 with a top margin of 5
+    axis.title.x = ggplot2::element_text(size = 14, margin = ggplot2::margin(t = 5)),
+    # as an extra, give the plot a title and justify it horisontally in the middle of the plot
+    plot.title = ggplot2::element_text(color = "darkgray", size = 24, hjust = 0.5),
+    # position the legend at the bottom of the screen
+    legend.position = "bottom",
+
+    complete = TRUE
+  )
+
 
 
