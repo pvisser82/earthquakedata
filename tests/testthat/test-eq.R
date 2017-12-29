@@ -65,7 +65,6 @@ test_that("Test that the geom_timeline_label displays the correct number of labe
     geom_timeline_label(aes(x = DATE, y = COUNTRY, label = LOCATION_NAME, size = EQ_PRIMARY), n_max = 5)
 
   expect_that(gobject$layers[[2]]$aes_params$n_max, equals(5))
-
 })
 
 #-------------------------------------------------------------------------------
