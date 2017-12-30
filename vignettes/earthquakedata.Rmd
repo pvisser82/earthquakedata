@@ -13,8 +13,8 @@ vignette: >
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
-  fig.width = 7,
-  fig.height = 7
+  fig.width = 7
+  
 )
 library(earthquakedata)
 library(dplyr)
@@ -88,7 +88,7 @@ The `theme_timeline()` function is a modified version of `theme_classic()` and d
 
 Below is an example that reads the data set, cleans it, filters it to specific countries and dates, plots it, labels the top 5 events and uses the correct theme. Please note that the labels for the legend are added as well along with a title for the plot:
 
-``` {r, message=FALSE}
+``` r
 readr::read_delim("../earthquakes.tsv.gz",delim = "\t") %>%
   eq_clean_data() %>%
   dplyr::filter(COUNTRY == c("USA","MEXICO") & lubridate::year(DATE) >= 2000) %>%
@@ -99,26 +99,27 @@ readr::read_delim("../earthquakes.tsv.gz",delim = "\t") %>%
     theme_timeline() +
     labs(size = "Richter Scale value:", colour = "# of Deaths:")
 ``` 
+![Timeline](../images/multiple_countries_with_labels.png?raw=true "Timeline")
 
 ## Map the earthquake data
 
-Using the `leaflet` package, it is possible to plot the earthquake information on an interactive map. The user can use the `eq_map()` function to plot the earthquakes on a map. Each earthquake is indicated by a blue circle. The size of the circle on the map is relative to the magnitude of the earthquake it represents. The `annot_col` parameter used by the `eq_map` function reflects a column in the data set that must be displayed when the user clicks on a specific earthquake on the map. The default value is `DATE` - Please note that this vignette uses an interactive map and the reader must click on an earthquake to see the pop up in action
+Using the `leaflet` package, it is possible to plot the earthquake information on an interactive map. The user can use the `eq_map()` function to plot the earthquakes on a map. Each earthquake is indicated by a blue circle. The size of the circle on the map is relative to the magnitude of the earthquake it represents. The `annot_col` parameter used by the `eq_map` function reflects a column in the data set that must be displayed when the user clicks on a specific earthquake on the map. The default value is `DATE` 
 
-``` {r, message=FALSE}
+``` r
 
  readr::read_delim("earthquakes.tsv.gz", delim = "\t") %>%
   eq_clean_data() %>%
   dplyr::filter(COUNTRY == "MEXICO" & lubridate::year(DATE) >= 2000) %>%
   eq_map(annot_col = "DATE")
 ```
+![Basic plot](../images/eq_map_DATE_column.png?raw=true "Basic plot")
 
-
-The `eq_create_label()` function is used to provide even more information. It takes the data set as an argument and creates an HTML label that can be displayed on the map as a pop-up. The label consists of the Location, Magnitude and Total deaths. If one of these fields are missing a value, the field is ignored when the label is built - Please note that this vignette uses an interactive map and the reader must click on an earthquake to see the pop up in action
-
-```{r, message=FALSE}
+The `eq_create_label()` function is used to provide even more information. It takes the data set as an argument and creates an HTML label that can be displayed on the map as a pop-up. The label consists of the Location, Magnitude and Total deaths. If one of these fields are missing a value, the field is ignored when the label is built 
+```r
 readr::read_delim("earthquakes.tsv.gz",delim = "\t") %>%
   eq_clean_data() %>%
   dplyr::filter(COUNTRY == "MEXICO" & lubridate::year(DATE) >= 2000) %>%
   dplyr::mutate(popup_text = eq_create_label(.))%>%
   eq_map(annot_col = "popup_text")
 ```
+![Additional annotation text](../images/eq_create_label.png?raw=true "Additional annotation text")
