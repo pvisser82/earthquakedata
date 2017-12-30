@@ -219,7 +219,7 @@ geom_timeline_label <- function(mapping = NULL,
 
 #' Timeline theme
 #'
-#' This theme modifies the Classis Theme to display the \code{geom_timeline} geometry.
+#' This theme modifies the Classic Theme to display the \code{geom_timeline} geometry.
 #' The y axis line, ticks and title are hidden
 #' The y axis line text is changed to darkgray with size 11 and a right-hand margin of 15
 #' The x axis line colour black with a thickness of 1

@@ -13,95 +13,112 @@ vignette: >
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
-  fig.width = 7
+  fig.width = 7,
+  fig.height = 7
 )
 library(earthquakedata)
 library(dplyr)
 library(ggplot2)
+library(leaflet)
 
-theme_timeline <- ggplot2::theme_classic() +
-  ggplot2::theme(
-    # hide the y axis line, ticks and title
-    axis.line.y = ggplot2::element_blank(),
-    axis.ticks.y = ggplot2::element_blank(),
-    axis.title.y = ggplot2::element_blank(),
-    # change the y axis line text to be darkgray, size 11 with a right-hand margin of 15
-    axis.text.y = ggplot2::element_text(colour = "darkgray",size = 11, margin = ggplot2::margin(r = 15)),
-    # show x axis and make the line colour black with a thickness of 1
-    axis.line.x = ggplot2::element_line(colour = "black", size = ggplot2::rel(1)),
-    # change the x axis text to be darkgray, size 11 with a top margin of 3
-    axis.text.x = ggplot2::element_text(colour = "darkgray",size = 11, margin = ggplot2::margin(t = 3)),
-    # change the x axis title to be size 14 with a top margin of 5
-    axis.title.x = ggplot2::element_text(size = 14, margin = ggplot2::margin(t = 5)),
-    # as an extra, give the plot a title and justify it horisontally in the middle of the plot
-    plot.title = ggplot2::element_text(color = "darkgray", size = 24, hjust = 0.5),
-    # position the legend at the bottom of the screen
-    legend.position = "bottom",
 
-    complete = TRUE
-  )
 ```
 
 ## Aim of the package
 
-The earthquakedata package allows the user to clean and visualise the earthquake data set provided by the U.S. National Oceanographic and Atmospheric Administration (NOAA). This data set contains information about 5,933 earthquakes over an approximately 4,000 year time span.
+The earthquakedata package allows the user to clean and visualise the earthquake data set provided by the [U.S. National Oceanographic and Atmospheric Administration (NOAA)](https://www.ngdc.noaa.gov/nndc/struts/form?t=101650&s=1&d=1). This data set contains information about 5,933 earthquakes over an approximately 4,000 year time span.
 
-``` {r, message=FALSE}
-readr::read_delim("earthquakes.tsv.gz",delim = "\t") %>%
+Download [here](https://www.ngdc.noaa.gov/nndc/struts/form?t=101650&s=1&d=1)
+
+The earthquakedata package has 6 functions that are exported for use by users and one internal function that is not visible:
+
+- `eq_clean_data()`
+- `geom_timeline()`
+- `geom_timeline_label()`
+- `theme_timeline()`
+- `eq_map()`
+- `eq_create_label()`
+
+## Clean the data
+
+To be able to visualise the data set properly, it is necessary to clean the data first. 
+
+This is achieved by:
+
+- Creating a `DATE` column by uniting `YEAR`, `MONTH` and `DAY` and converting it to the Date class
+- Converting the `LATITUDE` and `LONGITUDE` columns to numeric class
+- Stripping out the country name (including colon) from the `LOCATION_NAME` column and converting it to title case
+
+``` r
+clean_data <- readr::read_delim("../earthquakes.tsv.gz",delim = "\t") %>%
+  eq_clean_data() 
+```
+
+## Display the earthquake timeline
+
+The easiest way to display the earthquake data for multiple countries over a large time period is by using a timeline.
+
+To assist the user with this, the `geom_timeline()` function can be used in conjunction with the `ggplot2` package. The `geom_timeline()` function uses the following aesthetics - please note that the user is able to change this to other columns if required
+
+- x = `DATE`
+- y = `COUNTRY`
+- size = `EQ_PRIMARY`
+- colour = `DEATHS`
+
+``` r
+readr::read_delim("../earthquakes.tsv.gz",delim = "\t") %>%
   eq_clean_data() %>%
   dplyr::filter(COUNTRY == c("USA") & lubridate::year(DATE) >= 2000) %>%
+  ggplot() +
+    geom_timeline(aes(x = DATE, y = COUNTRY,size = EQ_PRIMARY, colour = DEATHS))
+```
+The above sample code will display a very basic graph using the default `ggplot2` theme. To allow the user to see some more information and to make the graph a bit more pleasing to the eye, the `geom_timeline_label()` and `theme_timeline()` functions were added to the package.
+
+The `geom_timeline_label()` function adds a vertical line with a text label to identify specific earthquakes easily. To manage the number of labels that will be plotted, the `n_max` parameter is used. It will limit the number of labels to the `n_max` amount and will show the labels for the earthquake events with the highest magnitude.
+
+The `theme_timeline()` function is a modified version of `theme_classic()` and does the following:
+
+- The y axis line, ticks and title are hidden
+- The y axis line text is changed to darkgray with size 11 and a right-hand margin of 15
+- The x axis line colour black with a thickness of 1
+- The x axis text is changed to darkgray with size 11 with a top margin of 3
+- The x axis title is size 14 with a top margin of 5
+- The plot a title is added and justified horisontally in the middle of the plot
+- The legend is positioned at the bottom of the screen
+
+Below is an example that reads the data set, cleans it, filters it to specific countries and dates, plots it, labels the top 5 events and uses the correct theme. Please note that the labels for the legend are added as well along with a title for the plot:
+
+``` {r, message=FALSE}
+readr::read_delim("../earthquakes.tsv.gz",delim = "\t") %>%
+  eq_clean_data() %>%
+  dplyr::filter(COUNTRY == c("USA","MEXICO") & lubridate::year(DATE) >= 2000) %>%
   ggplot() +
     geom_timeline(aes(x = DATE, y = COUNTRY,size = EQ_PRIMARY, colour = DEATHS)) +
     geom_timeline_label(aes(x = DATE, y = COUNTRY, label = LOCATION_NAME, size = EQ_PRIMARY), n_max = 5) +
     ggtitle("Earthquake Timeline") +
-    theme_timeline +
+    theme_timeline() +
     labs(size = "Richter Scale value:", colour = "# of Deaths:")
 ``` 
 
-Vignettes are long form documentation commonly included in packages. Because they are part of the distribution of the package, they need to be as compact as possible. The `html_vignette` output type provides a custom style sheet (and tweaks some options) to ensure that the resulting html is as small as possible. The `html_vignette` format:
+## Map the earthquake data
 
-- Never uses retina figures
-- Has a smaller default figure size
-- Uses a custom CSS stylesheet instead of the default Twitter Bootstrap style
+Using the `leaflet` package, it is possible to plot the earthquake information on an interactive map. The user can use the `eq_map()` function to plot the earthquakes on a map. Each earthquake is indicated by a blue circle. The size of the circle on the map is relative to the magnitude of the earthquake it represents. The `annot_col` parameter used by the `eq_map` function reflects a column in the data set that must be displayed when the user clicks on a specific earthquake on the map. The default value is `DATE` - Please note that this vignette uses an interactive map and the reader must click on an earthquake to see the pop up in action
 
-## Vignette Info
+``` {r, message=FALSE}
 
-Note the various macros within the `vignette` section of the metadata block above. These are required in order to instruct R how to build the vignette. Note that you should change the `title` field and the `\VignetteIndexEntry` to match the title of your vignette.
-
-## Styles
-
-The `html_vignette` template includes a basic CSS theme. To override this theme you can specify your own CSS in the document metadata as follows:
-
-    output: 
-      rmarkdown::html_vignette:
-        css: mystyles.css
-
-## Figures
-
-The figure sizes have been customised so that you can easily put two images side-by-side. 
-
-```{r, fig.show='hold'}
-plot(1:10)
-plot(10:1)
+ readr::read_delim("earthquakes.tsv.gz", delim = "\t") %>%
+  eq_clean_data() %>%
+  dplyr::filter(COUNTRY == "MEXICO" & lubridate::year(DATE) >= 2000) %>%
+  eq_map(annot_col = "DATE")
 ```
 
-You can enable figure captions by `fig_caption: yes` in YAML:
 
-    output:
-      rmarkdown::html_vignette:
-        fig_caption: yes
+The `eq_create_label()` function is used to provide even more information. It takes the data set as an argument and creates an HTML label that can be displayed on the map as a pop-up. The label consists of the Location, Magnitude and Total deaths. If one of these fields are missing a value, the field is ignored when the label is built - Please note that this vignette uses an interactive map and the reader must click on an earthquake to see the pop up in action
 
-Then you can use the chunk option `fig.cap = "Your figure caption."` in **knitr**.
-
-## More Examples
-
-You can write math expressions, e.g. $Y = X\beta + \epsilon$, footnotes^[A footnote here.], and tables, e.g. using `knitr::kable()`.
-
-```{r, echo=FALSE, results='asis'}
-knitr::kable(head(mtcars, 10))
+```{r, message=FALSE}
+readr::read_delim("earthquakes.tsv.gz",delim = "\t") %>%
+  eq_clean_data() %>%
+  dplyr::filter(COUNTRY == "MEXICO" & lubridate::year(DATE) >= 2000) %>%
+  dplyr::mutate(popup_text = eq_create_label(.))%>%
+  eq_map(annot_col = "popup_text")
 ```
-
-Also a quote using `>`:
-
-> "He who gives up [code] safety for [code] speed deserves neither."
-([via](https://twitter.com/hadleywickham/status/504368538874703872))
