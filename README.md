@@ -69,7 +69,7 @@ readr::read_delim("earthquakes.tsv.gz",delim = "\t") %>%
 ``` 
 ![Single country, with labels](images/single_country_with_labels.png?raw=true "Single country, with labels")
 
-#### Multiple countries :
+#### Multiple countries:
 
 By specifying multiple countries in the data set, it is possible to create more than one timeline on the same graph. The labels can be enabled or disabled as with single countries
 
@@ -85,3 +85,29 @@ readr::read_delim("earthquakes.tsv.gz",delim = "\t") %>%
     labs(size = "Richter Scale value:", colour = "# of Deaths:")
 ``` 
 ![Multiple Countries](images/multiple_countries_with_labels.png?raw=true "Multiple Countries")
+
+### Plot on a map:
+Because the earthquake data also contains the coordinates of the earthquakes, it is possible to plot them on an interactive Leaflet map using the `eq_map()` function. You can also use the `eq_create_label()` function to display more information for each earthquake.
+
+#### Basic plot:
+The `eq_map()` function is used to plot the location of each earthquake on the map. The size of the circles represent the magnitude of the earthquakes. The user can set the `annot_col` parameter to any column in the earthquake data set. This will allow the user to see the value of that column for the corresponding earthquake by clicking on the circle.
+
+```r 
+readr::read_delim("earthquakes.tsv.gz",delim = "\t") %>%
+  eq_clean_data() %>%
+  dplyr::filter(COUNTRY == "MEXICO" & lubridate::year(DATE) >= 2000) %>%
+  eq_map(annot_col = "DATE") 
+```
+![Basic plot](images/eq_map_DATE_column.png?raw=true "Basic plot")
+
+#### Additional annotation text:
+The `eq_create_label()` function takes the data set as an argument and creates an HTML label that can be displayed on the map. The label consists of the Location, Magnitude and Total deaths. If one of these fields are missing a value, the field is ignored when the label is built.
+
+```r
+readr::read_delim("earthquakes.tsv.gz",delim = "\t") %>%
+  eq_clean_data() %>%
+  dplyr::filter(COUNTRY == "MEXICO" & lubridate::year(DATE) >= 2000) %>%
+  dplyr::mutate(popup_text = eq_create_label(.))%>%
+  eq_map(annot_col = "popup_text")
+```
+![Additional annotation text](images/eq_create_label.png?raw=true "Additional annotation text")
