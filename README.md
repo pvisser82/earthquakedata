@@ -7,6 +7,7 @@ The goal of the earthquakedata package is to visualise the data in a timeline an
 -   `eq_clean_data()` cleans the earhtquake data set and prepares it for visualisation
 -   `geom_timeline()` allows the user to view the earthquake data using ggplot2
 -   `geom_timeline_label()` allows the user to view a specific amount of location labels on the timeline
+-   `timeline_theme()` a theme created for visualising the timeline
 -   `eq_map()` lets the user plot the earthquake data on an interactive map
 -   `eq_create_label()` allows the user to see more detailed information regarding the earhtquake in the annotation text for each event
 
@@ -64,7 +65,7 @@ readr::read_delim("earthquakes.tsv.gz",delim = "\t") %>%
     geom_timeline(aes(x = DATE, y = COUNTRY,size = EQ_PRIMARY, colour = DEATHS)) +
     geom_timeline_label(aes(x = DATE, y = COUNTRY, label = LOCATION_NAME, size = EQ_PRIMARY), n_max = 5) +
     ggtitle("Earthquake Timeline") +
-    theme_timeline +
+    theme_timeline() +
     labs(size = "Richter Scale value:", colour = "# of Deaths:")
 ``` 
 ![Single country, with labels](images/single_country_with_labels.png?raw=true "Single country, with labels")
@@ -81,7 +82,7 @@ readr::read_delim("earthquakes.tsv.gz",delim = "\t") %>%
     geom_timeline(aes(x = DATE, y = COUNTRY,size = EQ_PRIMARY, colour = DEATHS)) +
     geom_timeline_label(aes(x = DATE, y = COUNTRY, label = LOCATION_NAME, size = EQ_PRIMARY), n_max = 5) +
     ggtitle("Earthquake Timeline") +
-    theme_timeline +
+    theme_timeline() +
     labs(size = "Richter Scale value:", colour = "# of Deaths:")
 ``` 
 ![Multiple Countries](images/multiple_countries_with_labels.png?raw=true "Multiple Countries")

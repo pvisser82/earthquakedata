@@ -21,7 +21,7 @@ is the magnitude and the colour is the number of deaths
 geom_timeline function
 }
 \examples{
-\dontrun {
+\dontrun{
 readr::read_delim("earthquakes.tsv.gz",delim = "\\t") \%>\%
 eq_clean_data() \%>\%
  dplyr::filter(COUNTRY == "USA" & lubridate::year(DATE) >= 2000) \%>\%

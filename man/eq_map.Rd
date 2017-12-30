@@ -24,7 +24,7 @@ The earthquakes are mapped using the Latitude and Longitude for each and the siz
 reflects the magnitude of the earthquake.
 }
 \examples{
-\dontrun {
+\dontrun{
 readr::read_delim("earthquakes.tsv.gz", delim = "\\t") \%>\%
 eq_clean_data() \%>\%
  dplyr::filter(COUNTRY == "MEXICO" & lubridate::year(DATE) >= 2000) \%>\%

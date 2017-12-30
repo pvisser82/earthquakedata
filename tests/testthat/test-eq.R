@@ -79,8 +79,23 @@ test_that("Test that the eq_map function creates a valid Leaflet object", {
 #-------------------------------------------------------------------------------
 # eq_create_label function
 #
-#Test that the eq_create_label function returns a character vector
+# Test that the eq_create_label function returns a character vector
 
 test_that("Test that the eq_create_label function returns a character vector", {
   expect_true(is.character(eq_create_label(df_data)))
+})
+
+#-------------------------------------------------------------------------------
+# theme_timeline function
+#
+# Test that the plot title size is correct
+
+test_that("Test that the plot title size is correct", {
+  gobject <- ggplot(df_data) +
+    geom_timeline(aes(x = DATE, y = COUNTRY,size = EQ_PRIMARY, colour = DEATHS)) +
+    geom_timeline_label(aes(x = DATE, y = COUNTRY, label = LOCATION_NAME, size = EQ_PRIMARY), n_max = 5) +
+    theme_timeline()+
+    labs(size = "Richter Scale value:", colour = "# of Deaths:")
+
+  expect_that(gobject$theme$plot.title$size, equals(24))
 })

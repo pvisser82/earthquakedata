@@ -14,7 +14,7 @@
 #' @export
 #'
 #' @examples
-#' \dontrun {
+#' \dontrun{
 #' readr::read_delim("earthquakes.tsv.gz", delim = "\t") %>%
 #' eq_clean_data() %>%
 #'  dplyr::filter(COUNTRY == "MEXICO" & lubridate::year(DATE) >= 2000) %>%
@@ -48,7 +48,7 @@ eq_map <- function(df_data, annot_col = "DATE")
 #' @export
 #'
 #' @examples
-#' \dontrun {
+#' \dontrun{
 #' readr::read_delim("earthquakes.tsv.gz", delim = "\t") %>%
 #'  eq_clean_data() %>%
 #'   dplyr::filter(COUNTRY == "MEXICO" & lubridate::year(DATE) >= 2000) %>%

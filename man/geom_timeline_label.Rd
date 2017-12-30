@@ -22,7 +22,7 @@ This function returns the labels that are plotted on the timeline
 geom_timeline_label function
 }
 \examples{
-\dontrun {
+\dontrun{
 readr::read_delim("earthquakes.tsv.gz",delim = "\\t") \%>\%
 eq_clean_data() \%>\%
  dplyr::filter(COUNTRY == "USA" & lubridate::year(DATE) >= 2000) \%>\%
@@ -30,7 +30,7 @@ eq_clean_data() \%>\%
  geom_timeline(aes(x = DATE, y = COUNTRY,size = EQ_PRIMARY, colour = DEATHS)) +
  geom_timeline_label(aes(x = DATE, y = COUNTRY, label = LOCATION_NAME, size = EQ_PRIMARY), n_max = 5) +
  ggtitle("Earthquake Timeline") +
- theme_timeline +
+ theme_timeline() +
  labs(size = "Richter Scale value:", colour = "# of Deaths:")
 }
 }

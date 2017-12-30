@@ -19,7 +19,7 @@ EQ_PRIMARY and DEATHS for each earthquake contains a valid value and will add th
 they are valid. Otherwise, it will simply skip the specific field.
 }
 \examples{
-\dontrun {
+\dontrun{
 readr::read_delim("earthquakes.tsv.gz", delim = "\\t") \%>\%
  eq_clean_data() \%>\%
   dplyr::filter(COUNTRY == "MEXICO" & lubridate::year(DATE) >= 2000) \%>\%
