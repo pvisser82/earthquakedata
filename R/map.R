@@ -10,6 +10,8 @@
 #' @param df_data The data set containing the earthquake information
 #' @param annot_col The column that will be used for the pop-up. Default set to DATE
 #'
+#' @importFrom leaflet addTiles addCircleMarkers leaflet
+#'
 #' @return An interactive leaflet map displaying the earthquakes contained in the dataset
 #' @export
 #'

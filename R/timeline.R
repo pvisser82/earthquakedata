@@ -60,7 +60,14 @@ GeomTimeline <- ggplot2::ggproto("GeomTimeline", ggplot2::Geom,
 #' geom_timeline function
 #'
 #' @param mapping The aesthetics that the geom accepts
+#' @param data The input dataset
 #' @param stat The statistical transformation function that must be used
+#' @param position The position of the transformation data
+#' @param na.rm A logical scalar. Should missing values (including NaN)
+#' be removed?
+#' @param show.legend Display the legend or not (TRUE or FALSE)
+#' @param inherit.aes Inherit aesthetics from main ggplot call
+#' @param ... Numeric, complex, or logical vectors.
 #'
 #' @return  This function returns a plot where earthquakes are plotted per country and where the size
 #' is the magnitude and the colour is the number of deaths
@@ -91,13 +98,13 @@ geom_timeline <- function(mapping = NULL, data = NULL, stat = "identity",
 #' using the n_max parameter. The function will retrieve the n_max number of highest magnitudes
 #' using the setup_data function and add the label to those earthquakes.
 #'
-#' @param n_max The maximum number of labels to be displayed.
 #'
 #' @importFrom ggplot2 ggproto
 #' @importFrom ggplot2 Geom
 #' @importFrom ggplot2 aes
 #' @importFrom ggplot2 draw_key_label
 #' @importFrom dplyr top_n
+#' @importFrom magrittr "%>%"
 #' @importFrom grid segmentsGrob
 #' @importFrom grid gpar
 #' @importFrom grid textGrob
@@ -173,6 +180,12 @@ GeomTimeLineLabel <- ggplot2::ggproto("GeomTimeLineLabel", ggplot2::Geom,
 #' @param mapping The aesthetics that the geom accepts
 #' @param stat The statistical transformation function that must be used
 #' @param n_max The maximum number of labels to display
+#' @param data The input dataset
+#' @param position The position of the transformation data
+#' @param na.rm A logical scalar. Should missing values (including NaN)
+#' be removed?
+#' @param show.legend Display the legend or not (TRUE or FALSE)
+#' @param inherit.aes Inherit aesthetics from main ggplot call
 #'
 #' @return This function returns the labels that are plotted on the timeline
 #' @export
@@ -184,7 +197,8 @@ GeomTimeLineLabel <- ggplot2::ggproto("GeomTimeLineLabel", ggplot2::Geom,
 #'  dplyr::filter(COUNTRY == "USA" & lubridate::year(DATE) >= 2000) %>%
 #'  ggplot() +
 #'  geom_timeline(aes(x = DATE, y = COUNTRY,size = EQ_PRIMARY, colour = DEATHS)) +
-#'  geom_timeline_label(aes(x = DATE, y = COUNTRY, label = LOCATION_NAME, size = EQ_PRIMARY), n_max = 5) +
+#'  geom_timeline_label(aes(x = DATE, y = COUNTRY, label = LOCATION_NAME,
+#'  size = EQ_PRIMARY), n_max = 5) +
 #'  ggtitle("Earthquake Timeline") +
 #'  theme_timeline() +
 #'  labs(size = "Richter Scale value:", colour = "# of Deaths:")
@@ -196,10 +210,7 @@ geom_timeline_label <- function(mapping = NULL,
                                 na.rm = TRUE,
                                 show.legend = NA,
                                 inherit.aes = TRUE,
-                                xmin = NULL,
-                                xmax = NULL,
-                                n_max = 5,
-                                fill = NA
+                                n_max = 5
 ) {
 
   ggplot2::layer(
@@ -228,18 +239,21 @@ geom_timeline_label <- function(mapping = NULL,
 #' The plot a title is added and justified horisontally in the middle of the plot
 #' The legend is positioned at the bottom of the screen
 #'
+#' @importFrom magrittr "%>%"
+#'
 #' @return A ggplot2 theme
 #'
 #' @export
 #'
 #' @examples
-#' #' \dontrun{
+#' \dontrun{
 #' readr::read_delim("earthquakes.tsv.gz",delim = "\t") %>%
 #' eq_clean_data() %>%
 #'  dplyr::filter(COUNTRY == "USA" & lubridate::year(DATE) >= 2000) %>%
 #'  ggplot() +
 #'  geom_timeline(aes(x = DATE, y = COUNTRY,size = EQ_PRIMARY, colour = DEATHS)) +
-#'  geom_timeline_label(aes(x = DATE, y = COUNTRY, label = LOCATION_NAME, size = EQ_PRIMARY), n_max = 5) +
+#'  geom_timeline_label(aes(x = DATE, y = COUNTRY, label = LOCATION_NAME,
+#'  size = EQ_PRIMARY), n_max = 5) +
 #'  ggtitle("Earthquake Timeline") +
 #'  theme_timeline() +
 #'  labs(size = "Richter Scale value:", colour = "# of Deaths:")
@@ -253,13 +267,13 @@ theme_timeline <- function()
       axis.ticks.y = ggplot2::element_blank(),
       axis.title.y = ggplot2::element_blank(),
       # change the y axis line text to be darkgray, size 11 with a right-hand margin of 15
-      axis.text.y = ggplot2::element_text(colour = "darkgray",size = 11, margin = margin(r = 15)),
+      axis.text.y = ggplot2::element_text(colour = "darkgray",size = 11, margin = ggplot2::margin(r = 15)),
       # show x axis and make the line colour black with a thickness of 1
       axis.line.x = ggplot2::element_line(colour = "black", size = ggplot2::rel(1)),
       # change the x axis text to be darkgray, size 11 with a top margin of 3
-      axis.text.x = ggplot2::element_text(colour = "darkgray",size = 11, margin = margin(t = 3)),
+      axis.text.x = ggplot2::element_text(colour = "darkgray",size = 11, margin = ggplot2::margin(t = 3)),
       # change the x axis title to be size 14with a top margin of 5
-      axis.title.x = ggplot2::element_text(size = 14, margin = margin(t = 5)),
+      axis.title.x = ggplot2::element_text(size = 14, margin = ggplot2::margin(t = 5)),
       # as an extra, give the plot a title and justify it horisontally in the middle of the plot
       plot.title = ggplot2::element_text(color = "darkgray", size = 24, hjust = 0.5),
       # position the legend at the bottom of the screen

@@ -11,7 +11,20 @@ geom_timeline(mapping = NULL, data = NULL, stat = "identity",
 \arguments{
 \item{mapping}{The aesthetics that the geom accepts}
 
+\item{data}{The input dataset}
+
 \item{stat}{The statistical transformation function that must be used}
+
+\item{position}{The position of the transformation data}
+
+\item{na.rm}{A logical scalar. Should missing values (including NaN)
+be removed?}
+
+\item{show.legend}{Display the legend or not (TRUE or FALSE)}
+
+\item{inherit.aes}{Inherit aesthetics from main ggplot call}
+
+\item{...}{Numeric, complex, or logical vectors.}
 }
 \value{
 This function returns a plot where earthquakes are plotted per country and where the size

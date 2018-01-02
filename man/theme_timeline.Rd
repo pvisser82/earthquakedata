@@ -20,13 +20,14 @@ The plot a title is added and justified horisontally in the middle of the plot
 The legend is positioned at the bottom of the screen
 }
 \examples{
-#' \dontrun{
+\dontrun{
 readr::read_delim("earthquakes.tsv.gz",delim = "\\t") \%>\%
 eq_clean_data() \%>\%
  dplyr::filter(COUNTRY == "USA" & lubridate::year(DATE) >= 2000) \%>\%
  ggplot() +
  geom_timeline(aes(x = DATE, y = COUNTRY,size = EQ_PRIMARY, colour = DEATHS)) +
- geom_timeline_label(aes(x = DATE, y = COUNTRY, label = LOCATION_NAME, size = EQ_PRIMARY), n_max = 5) +
+ geom_timeline_label(aes(x = DATE, y = COUNTRY, label = LOCATION_NAME,
+ size = EQ_PRIMARY), n_max = 5) +
  ggtitle("Earthquake Timeline") +
  theme_timeline() +
  labs(size = "Richter Scale value:", colour = "# of Deaths:")

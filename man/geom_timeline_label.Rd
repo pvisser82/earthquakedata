@@ -6,12 +6,23 @@
 \usage{
 geom_timeline_label(mapping = NULL, data = NULL, stat = "identity",
   position = "identity", na.rm = TRUE, show.legend = NA,
-  inherit.aes = TRUE, xmin = NULL, xmax = NULL, n_max = 5, fill = NA)
+  inherit.aes = TRUE, n_max = 5)
 }
 \arguments{
 \item{mapping}{The aesthetics that the geom accepts}
 
+\item{data}{The input dataset}
+
 \item{stat}{The statistical transformation function that must be used}
+
+\item{position}{The position of the transformation data}
+
+\item{na.rm}{A logical scalar. Should missing values (including NaN)
+be removed?}
+
+\item{show.legend}{Display the legend or not (TRUE or FALSE)}
+
+\item{inherit.aes}{Inherit aesthetics from main ggplot call}
 
 \item{n_max}{The maximum number of labels to display}
 }
@@ -28,7 +39,8 @@ eq_clean_data() \%>\%
  dplyr::filter(COUNTRY == "USA" & lubridate::year(DATE) >= 2000) \%>\%
  ggplot() +
  geom_timeline(aes(x = DATE, y = COUNTRY,size = EQ_PRIMARY, colour = DEATHS)) +
- geom_timeline_label(aes(x = DATE, y = COUNTRY, label = LOCATION_NAME, size = EQ_PRIMARY), n_max = 5) +
+ geom_timeline_label(aes(x = DATE, y = COUNTRY, label = LOCATION_NAME,
+ size = EQ_PRIMARY), n_max = 5) +
  ggtitle("Earthquake Timeline") +
  theme_timeline() +
  labs(size = "Richter Scale value:", colour = "# of Deaths:")

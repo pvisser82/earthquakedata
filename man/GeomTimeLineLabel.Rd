@@ -8,9 +8,6 @@
 \usage{
 GeomTimeLineLabel
 }
-\arguments{
-\item{n_max}{The maximum number of labels to be displayed.}
-}
 \description{
 This geom is responsible for drawing the labels on the timeline. The number of labels are set
 using the n_max parameter. The function will retrieve the n_max number of highest magnitudes
