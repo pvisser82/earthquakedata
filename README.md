@@ -1,5 +1,8 @@
 # earthquakedata
 
+## Travis
+[![Travis-CI Build Status](https://travis-ci.org/pvisser82/earthquakedata.svg?branch=master)](https://travis-ci.org/pvearthquakedata)
+
 ## Overview
 
 The goal of the earthquakedata package is to visualise the data in a timeline and using an interactive map:
