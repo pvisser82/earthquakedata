@@ -14,7 +14,8 @@ Imports:
   ggplot2,
   leaflet,
   lubridate,
-  readr
+  readr,
+  stringr
 Suggests: knitr,
     rmarkdown,
     testthat
