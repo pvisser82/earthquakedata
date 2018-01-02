@@ -9,11 +9,13 @@ License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 6.0.1.9000
+Imports:
+  dplyr,
+  ggplot2,
+  leaflet,
+  lubridate,
+  readr
 Suggests: knitr,
-    dplyr,
-    leaflet,
-    lubridate,
-    readr,
     rmarkdown,
     testthat
 VignetteBuilder: knitr
